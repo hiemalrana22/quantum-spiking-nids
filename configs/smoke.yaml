@@ -1,0 +1,65 @@
+# Offline smoke test - synthetic data, tiny everything. No download required.
+data:
+  dataset: synthetic
+  root: data/raw
+  cache_dir: data/processed
+  max_rows: 600
+  balance: undersample
+  binary: true
+  min_class_count: 20
+  scaler: quantile
+  select_k: 16
+  reducer: pca
+  n_features: 4
+  test_size: 0.2
+  val_size: 0.1
+  seed: 0
+  n_jobs: 1
+
+encoding: {scheme: rate, timesteps: 4, gain: 1.0, tau: 3.0, deterministic: false, seed: 0}
+
+model:
+  n_qubits: 4
+  n_qlif_layers: 1
+  ansatz_layers: 1
+  ansatz: ring
+  beta: 0.9
+  learn_beta: true
+  threshold: 0.55
+  learn_threshold: false
+  reset: subtract
+  angle_map: sigmoid       # sigmoid = monotone (required); tanh = symmetric ablation
+  angle_gain: 2.0
+  angle_bias: -2.0
+  surrogate: fast_sigmoid
+  surrogate_alpha: 5.0
+  readout: rate_mem_prob
+  dropout: 0.0
+  n_classes: 2
+  diff_method: backprop
+
+noise: {enabled: false, backend: analytic, depolarizing: 0.01, amplitude_damping: 0.005,
+        phase_damping: 0.0, readout_error: 0.0, shots: null, ibm_backend: ibm_brisbane}
+
+train:
+  epochs: 2
+  batch_size: 32
+  lr: 0.005
+  quantum_lr: 0.02
+  weight_decay: 0.0001
+  optimizer: adamw
+  scheduler: none
+  loss: focal
+  focal_gamma: 2.0
+  grad_clip: 1.0
+  patience: 5
+  device: cpu
+  num_workers: 0
+  amp: false
+  log_every: 0
+  out_dir: artifacts
+  run_name: smoke
+  save_best: false
+  seed: 0
+
+baselines: {enabled: [rf, mlp], qsvc_max_train: 120, qsvc_reps: 1, qcnn_epochs: 2}
